@@ -2,10 +2,10 @@ const mysql = require('mysql2/promise');
 require('dotenv').config();
 
 const dbConfig = {
-  host: 'localhost',         // or 'localhost'
-  port: 3306,                // default
-  user: 'root',              // your MySQL user
-  password: '12345', // set your password
+  host: process.env.DB_HOST,         // or 'localhost'
+  port: process.env.DB_PORT,                // default
+  user: process.env.DB_USER,              // your MySQL user
+  password: process.env.DB_PASSWORD, // set your password
   database: 'viewList',      // or whatever DB name you created
 };
 
