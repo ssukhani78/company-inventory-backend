@@ -4,7 +4,9 @@ const { v4: uuidv4 } = require("uuid");
 class Item {
   // Insert a new item
   static async create(itemData) {
-    const { name, description, hsnCode } = itemData;
+    const { name, description, hsnCode,status } = itemData;
+
+    description = description ? description : null; 
 
     const insertQuery = `
       INSERT INTO item 
@@ -14,7 +16,7 @@ class Item {
 
     const id = uuidv4();
 
-    const values = [id, name, description, hsnCode, "active"];
+    const values = [id, name, description, hsnCode, status];
 
     try {
       const [result] = await pool.execute(insertQuery, values);
@@ -30,8 +32,7 @@ class Item {
   }
   // Get all items
   static async getAll() {
-    const query =
-      'SELECT * FROM item ORDER BY createdAt ASC';
+    const query = "SELECT * FROM item ORDER BY createdAt ASC";
 
     try {
       const [rows] = await pool.execute(query);
@@ -76,6 +77,8 @@ class Item {
       WHERE id = ?
     `;
 
+    itemData.description = itemData.description ? itemData.description : null;
+
     const values = [
       itemData.name,
       itemData.description,
@@ -96,9 +99,9 @@ class Item {
     }
   }
 
-  // Delete item (soft delete)
+  // Delete item (hard delete)
   static async delete(id) {
-    const query = 'DELETE FROM item WHERE id = ?';
+    const query = "DELETE FROM item WHERE id = ?";
 
     try {
       const [result] = await pool.execute(query, [id]);

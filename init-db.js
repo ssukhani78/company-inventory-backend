@@ -33,15 +33,15 @@ function createTables() {
       query: `
         CREATE TABLE IF NOT EXISTS company (
           id CHAR(36) PRIMARY KEY,
-          name VARCHAR(100),
-          gstNo VARCHAR(20),
-          email VARCHAR(100),
-          phone VARCHAR(20),
-          address TEXT,
-          city VARCHAR(50),
-          state VARCHAR(50),
-          pincode VARCHAR(10),
-          status ENUM('active', 'inactive'),
+          name VARCHAR(100) NOT NULL,
+          gstNo VARCHAR(20) NOT NULL,
+          email VARCHAR(100) DEFAULT NULL,
+          phone VARCHAR(20) DEFAULT NULL,
+          address TEXT NOT NULL,
+          city VARCHAR(50) NOT NULL,
+          state VARCHAR(50) NOT NULL,
+          pincode VARCHAR(10) NOT NULL,
+          status ENUM('active', 'inactive') NOT NULL,
           createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
           updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
         )
@@ -52,10 +52,10 @@ function createTables() {
       query: `
         CREATE TABLE IF NOT EXISTS item (
           id CHAR(36) PRIMARY KEY,
-          itemName VARCHAR(100),
-          hsnCode VARCHAR(20),
-          description TEXT,
-          status ENUM('active', 'inactive'),
+          itemName VARCHAR(100) NOT NULL,
+          hsnCode VARCHAR(20) NOT NULL,
+          description TEXT DEFAULT NULL,
+          status ENUM('active', 'inactive') NOT NULL,
           createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
           updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
         )
@@ -77,9 +77,9 @@ function createTables() {
       query: `
         CREATE TABLE IF NOT EXISTS sales (
           id CHAR(36) PRIMARY KEY,
-          companyId CHAR(36),
-          itemId CHAR(36),
-          date DATE,
+          companyId CHAR(36) NOT NULL,
+          itemId CHAR(36) NOT NULL,
+          date DATE NOT NULL DEFAULT CURRENT_TIMESTAMP,
           FOREIGN KEY (companyId) REFERENCES company(id),
           FOREIGN KEY (itemId) REFERENCES item(id)
         )

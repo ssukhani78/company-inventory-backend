@@ -13,6 +13,15 @@ class CompanyController {
     try {
       const companyData = req.body;
 
+      const existingCompany = await Company.findByGstNo(companyData.gstNo);
+
+      if (existingCompany) {
+        return res.status(400).json({
+          success: false,
+          message: 'A company with this GST number already exists'
+        });
+      }
+
       const newCompany = await Company.create(companyData);
       
       res.status(201).json({
@@ -129,9 +138,9 @@ class CompanyController {
       
       // If no rows were affected, the company might have been deleted
       if (result.affectedRows === 0) {
-        return res.status(404).json({
-          success: false,
-          message: 'Company not found or no changes made'
+        return res.status(200).json({
+          success: true,
+          message: 'No changes made'
         });
       }
       

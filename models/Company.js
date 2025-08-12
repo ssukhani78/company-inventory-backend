@@ -2,37 +2,11 @@ const { pool } = require('../config/database');
 const { v4: uuidv4 } = require('uuid');
 
 class Company {
-  // Create company table if it doesn't exist
-  // static async createTable() {
-  //   const createTableQuery = `
-  //     CREATE TABLE IF NOT EXISTS companies (
-  //       id INT AUTO_INCREMENT PRIMARY KEY,
-  //       name VARCHAR(255) NOT NULL,
-  //       email VARCHAR(255) UNIQUE,
-  //       phone VARCHAR(20),
-  //       address TEXT,
-  //       industry VARCHAR(100),
-  //       founded_year INT,
-  //       employee_count INT,
-  //       website VARCHAR(255),
-  //       description TEXT,
-  //       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  //       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-  //     )
-  //   `;
-    
-  //   try {
-  //     await pool.execute(createTableQuery);
-  //     console.log('✅ Companies table created/verified successfully');
-  //   } catch (error) {
-  //     console.error('❌ Error creating companies table:', error.message);
-  //     throw error;
-  //   }
-  // }
+ 
 
   // Insert a new company
   static async create(companyData) {
-    const {
+    let {
       name,
       gstNo,
       email,
@@ -40,8 +14,16 @@ class Company {
       address,
       city,
       state,
-      pincode
+      pincode,
+      status
     } = companyData;
+
+    email = email ? email : null;
+    phone = phone ? phone : null;
+
+    if(phone && phone.length === 10){
+      phone = `+91${phone}`;
+    }
 
     const insertQuery = `
       INSERT INTO company 
@@ -61,7 +43,7 @@ class Company {
         city,
         state,
         pincode,
-        'active'
+        status
     ];
 
     try {
@@ -103,10 +85,10 @@ class Company {
     } 
   }
 
-  static async findByEmailAndPinCode(email, pinCode) {
+  static async findByGstNo(gstNo) {
     try{
-      const query = 'SELECT * FROM company WHERE email = ? AND pincode = ?';
-      const values = [email, pinCode];
+      const query = 'SELECT * FROM company WHERE gstNo = ?';
+      const values = [gstNo];
       const [rows] = await pool.execute(query, values);
       return rows[0];
     } catch (error) {
@@ -116,12 +98,19 @@ class Company {
   }
 
   // Update company
-  static async update(id, companyData,) {
+  static async update(id, companyData) {
     const updateQuery = `
       UPDATE company 
       SET name = ?, email = ?, phone = ?, address = ?, city = ?, state = ?, pincode = ?, gstNo = ?, status = ?, updatedAt = CURRENT_TIMESTAMP
       WHERE id = ?
     `;
+
+    companyData.email = companyData.email ? companyData.email : null;
+    companyData.phone = companyData.phone ? companyData.phone : null;
+
+    if(companyData.phone && companyData.phone.length === 10){
+      companyData.phone = `+91${companyData.phone}`;
+    }
 
     const values = [
       companyData.name,
@@ -148,7 +137,7 @@ class Company {
     }
   }
 
-  // Delete company
+  // Delete company (hard delete)
   static async delete(id) {
     const query = 'DELETE FROM company WHERE id = ?';
     

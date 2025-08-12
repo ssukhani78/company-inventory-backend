@@ -8,22 +8,23 @@ const Joi = require("joi");
 const validate = (schema, property = "body") => {
   return (req, res, next) => {
     const { error, value } = schema.validate(req[property], {
-      abortEarly: false, // Return all validation errors
+      abortEarly: true, // Stop at first validation error
       allowUnknown: false, // Don't allow unknown fields
       stripUnknown: true, // Remove unknown fields
     });
 
     if (error) {
-      const errorDetails = error.details.map((detail) => ({
-        field: detail.path.join("."),
-        message: detail.message,
-        value: detail.context.value,
-      }));
+      // Get only the first error
+      const firstError = error.details[0];
 
       return res.status(400).json({
         success: false,
         message: "Validation error",
-        errors: errorDetails,
+        error: {
+          field: firstError.path.join("."),
+          message: firstError.message,
+          value: firstError.context.value,
+        },
       });
     }
 
@@ -45,19 +46,76 @@ const companySchemas = {
 
     gstNo: Joi.string()
       .pattern(/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/)
-      .optional()
+      .required()
       .messages({
         "string.pattern.base":
           "GST number must be in valid format (e.g., 27ABCDE1234F1Z5)",
       }),
 
-    email: Joi.string().email().max(100).optional().messages({
+    email: Joi.string().email().max(100).allow(null, "").optional().messages({
       "string.email": "Please provide a valid email address",
       "string.max": "Email must not exceed 100 characters",
     }),
 
     phone: Joi.string()
-      .pattern(/^[+]?[1-9]?[0-9]{7,15}$/)
+      .pattern(/^(\+\d{2}[0-9]{10}|[0-9]{10})$/)
+      .max(13)
+      .allow(null, "")
+      .optional()
+      .messages({
+        "string.pattern.base": "Please- provide a valid phone number",
+      }),
+
+    address: Joi.string().max(500).required().messages({
+      "string.max": "Address must not exceed 500 characters",
+    }),
+
+    city: Joi.string().min(2).max(50).required().messages({
+      "string.min": "City must be at least 2 characters long",
+      "string.max": "City must not exceed 50 characters",
+    }),
+
+    state: Joi.string().min(2).max(50).required().messages({
+      "string.min": "State must be at least 2 characters long",
+      "string.max": "State must not exceed 50 characters",
+    }),
+
+    pincode: Joi.string()
+      .pattern(/^[1-9][0-9]{5}$/)
+      .required()
+      .messages({
+        "string.pattern.base":
+          "Pincode must be a valid 6-digit Indian postal code",
+      }),
+
+    status: Joi.string().valid("active", "inactive").required().messages({
+      "any.only": "Status must be either active or inactive",
+    }),
+  }),
+
+  // Schema for updating a company (all fields optional except validation rules)
+  update: Joi.object({
+    name: Joi.string().min(2).max(100).required().messages({
+      "string.min": "Company name must be at least 2 characters long",
+      "string.max": "Company name must not exceed 100 characters",
+    }),
+
+    gstNo: Joi.string()
+      .pattern(/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/)
+      .required()
+      .messages({
+        "string.pattern.base":
+          "GST number must be in valid format (e.g., 27ABCDE1234F1Z5)",
+      }),
+
+    email: Joi.string().email().max(100).allow(null, "").optional().messages({
+      "string.email": "Please provide a valid email address",
+      "string.max": "Email must not exceed 100 characters",
+    }),
+
+    phone: Joi.string()
+      .pattern(/^(\+\d{2}[0-9]{10}|[0-9]{10})$/)
+      .allow(null, "")
       .max(13)
       .optional()
       .messages({
@@ -85,59 +143,8 @@ const companySchemas = {
         "string.pattern.base":
           "Pincode must be a valid 6-digit Indian postal code",
       }),
-  }),
 
-  // Schema for updating a company (all fields optional except validation rules)
-  update: Joi.object({
-    name: Joi.string().min(2).max(100).optional().messages({
-      "string.min": "Company name must be at least 2 characters long",
-      "string.max": "Company name must not exceed 100 characters",
-    }),
-
-    gstNo: Joi.string()
-      .pattern(/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/)
-      .optional()
-      .messages({
-        "string.pattern.base":
-          "GST number must be in valid format (e.g., 27ABCDE1234F1Z5)",
-      }),
-
-    email: Joi.string().email().max(100).optional().messages({
-      "string.email": "Please provide a valid email address",
-      "string.max": "Email must not exceed 100 characters",
-    }),
-
-    phone: Joi.string()
-      .pattern(/^[+]?[1-9]?[0-9]{7,15}$/)
-      .max(20)
-      .optional()
-      .messages({
-        "string.pattern.base": "Please provide a valid phone number",
-      }),
-
-    address: Joi.string().max(500).optional().messages({
-      "string.max": "Address must not exceed 500 characters",
-    }),
-
-    city: Joi.string().min(2).max(50).optional().messages({
-      "string.min": "City must be at least 2 characters long",
-      "string.max": "City must not exceed 50 characters",
-    }),
-
-    state: Joi.string().min(2).max(50).optional().messages({
-      "string.min": "State must be at least 2 characters long",
-      "string.max": "State must not exceed 50 characters",
-    }),
-
-    pincode: Joi.string()
-      .pattern(/^[1-9][0-9]{5}$/)
-      .optional()
-      .messages({
-        "string.pattern.base":
-          "Pincode must be a valid 6-digit Indian postal code",
-      }),
-
-    status: Joi.string().valid("active", "inactive").optional().messages({
+    status: Joi.string().valid("active", "inactive").required().messages({
       "any.only": "Status must be either active or inactive",
     }),
   })
@@ -167,7 +174,7 @@ const itemSchemas = {
       "any.required": "Item name is required",
     }),
 
-    description: Joi.string().max(500).optional().messages({
+    description: Joi.string().max(500).optional().allow(null, "").messages({
       "string.max": "Description must not exceed 500 characters",
     }),
 
@@ -176,11 +183,15 @@ const itemSchemas = {
       "string.max": "HSN code must not exceed 10 characters",
       "any.required": "HSN code is required",
     }),
+
+    status: Joi.string().valid("active", "inactive").required().messages({
+      "any.only": "Status must be either active or inactive",
+    }),
   }),
 
   // Schema for updating an item (all fields optional except validation rules)
   update: Joi.object({
-    name: Joi.string().min(2).max(100).optional().messages({
+    name: Joi.string().min(2).max(100).required().messages({
       "string.min": "Item name must be at least 2 characters long",
       "string.max": "Item name must not exceed 100 characters",
     }),

@@ -6,8 +6,8 @@ const CompanyController = require('../controllers/companyController');
 const { 
   validateCreateCompany, 
   validateUpdateCompany, 
-  validateCompanyId 
 } = require('../middlewares/validate');
+const { authenticateToken } = require('../middlewares/auth');
 
 /**
  * Company Routes
@@ -16,12 +16,14 @@ const {
 
 // POST /api/companies - Create a new company
 router.post('/', 
+  authenticateToken,  
   validateCreateCompany,
   CompanyController.createCompany
 );
 
 // GET /api/companies - Get all companies (with optional filtering)
 router.get('/', 
+  authenticateToken,
   CompanyController.getAllCompanies
 );
 
@@ -32,20 +34,21 @@ router.get('/',
 
 // GET /api/companies/:id - Get company by ID
 router.get('/:id', 
-  validateCompanyId,
+  authenticateToken,
   CompanyController.getCompanyById
 );
 
 // PUT /api/companies/:id - Update company
 router.put('/:id', 
-  validateCompanyId,
+  authenticateToken,
   validateUpdateCompany,
   CompanyController.updateCompany
 );
 
 // DELETE /api/companies/:id - Delete company
 router.delete('/:id', 
-  validateCompanyId,
+  authenticateToken,
+  // validateCompanyId,
   CompanyController.deleteCompany
 );
 
