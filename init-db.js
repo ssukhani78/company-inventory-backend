@@ -29,9 +29,9 @@ connection.connect((err) => {
 function createTables() {
   const tables = [
     {
-      name: "Company",
+      name: "company",
       query: `
-        CREATE TABLE IF NOT EXISTS Company (
+        CREATE TABLE IF NOT EXISTS company (
           id CHAR(36) PRIMARY KEY,
           name VARCHAR(100),
           gstNo VARCHAR(20),
@@ -41,32 +41,47 @@ function createTables() {
           city VARCHAR(50),
           state VARCHAR(50),
           pincode VARCHAR(10),
-          status ENUM('active', 'inactive')
+          status ENUM('active', 'inactive'),
+          createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
         )
       `,
     },
     {
-      name: "Item",
+      name: "item",
       query: `
-        CREATE TABLE IF NOT EXISTS Item (
+        CREATE TABLE IF NOT EXISTS item (
           id CHAR(36) PRIMARY KEY,
           itemName VARCHAR(100),
           hsnCode VARCHAR(20),
           description TEXT,
-          status ENUM('active', 'inactive')
+          status ENUM('active', 'inactive'),
+          createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
         )
       `,
     },
     {
-      name: "Sales",
+      name: "user",
       query: `
-        CREATE TABLE IF NOT EXISTS Sales (
+        CREATE TABLE IF NOT EXISTS user (
+          id CHAR(36) PRIMARY KEY,
+          name VARCHAR(100) NOT NULL,
+          email VARCHAR(100) UNIQUE NOT NULL,
+          password VARCHAR(255) NOT NULL,
+        )
+      `,
+    },
+    {
+      name: "sales",
+      query: `
+        CREATE TABLE IF NOT EXISTS sales (
           id CHAR(36) PRIMARY KEY,
           companyId CHAR(36),
           itemId CHAR(36),
           date DATE,
-          FOREIGN KEY (companyId) REFERENCES Company(id),
-          FOREIGN KEY (itemId) REFERENCES Item(id)
+          FOREIGN KEY (companyId) REFERENCES company(id),
+          FOREIGN KEY (itemId) REFERENCES item(id)
         )
       `,
     },

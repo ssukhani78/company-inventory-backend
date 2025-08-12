@@ -83,7 +83,7 @@ class Company {
 
     try {
       const [rows] = await pool.execute(query);
-      return rows[0];
+      return rows;
     } catch (error) {
       console.error('❌ Error fetching companies:', error.message);
       throw error;
@@ -101,6 +101,18 @@ class Company {
       console.error('❌ Error fetching company:', error.message);
       throw error;
     } 
+  }
+
+  static async findByEmailAndPinCode(email, pinCode) {
+    try{
+      const query = 'SELECT * FROM company WHERE email = ? AND pincode = ?';
+      const values = [email, pinCode];
+      const [rows] = await pool.execute(query, values);
+      return rows[0];
+    } catch (error) {
+      console.error('❌ Error finding company by email and pin code:', error.message);
+      throw error;
+    }
   }
 
   // Update company
