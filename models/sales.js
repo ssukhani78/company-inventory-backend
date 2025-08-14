@@ -41,7 +41,7 @@ class Sales {
       FROM sales s
       LEFT JOIN company c ON s.companyId = c.id
       LEFT JOIN item i ON s.itemId = i.id
-      ORDER BY s.createdAt DESC
+      ORDER BY s.createdAt ASC
     `;
 
     try {
