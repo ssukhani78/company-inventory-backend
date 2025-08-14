@@ -68,7 +68,7 @@ function createTables() {
           id CHAR(36) PRIMARY KEY,
           name VARCHAR(100) NOT NULL,
           email VARCHAR(100) UNIQUE NOT NULL,
-          password VARCHAR(255) NOT NULL,
+          password VARCHAR(255) NOT NULL
         )
       `,
     },
@@ -79,7 +79,7 @@ function createTables() {
           id CHAR(36) PRIMARY KEY,
           companyId CHAR(36) NOT NULL,
           itemId CHAR(36) NOT NULL,
-          date DATE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
           FOREIGN KEY (companyId) REFERENCES company(id),
           FOREIGN KEY (itemId) REFERENCES item(id)
         )

@@ -63,7 +63,7 @@ const companySchemas = {
       .allow(null, "")
       .optional()
       .messages({
-        "string.pattern.base": "Please- provide a valid phone number",
+        "string.pattern.base": "Please provide a valid phone number",
       }),
 
     address: Joi.string().max(500).required().messages({
@@ -196,7 +196,7 @@ const itemSchemas = {
       "string.max": "Item name must not exceed 100 characters",
     }),
 
-    description: Joi.string().max(500).optional().messages({
+    description: Joi.string().max(500).allow(null,'').optional().messages({
       "string.max": "Description must not exceed 500 characters",
     }),
 

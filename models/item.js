@@ -4,7 +4,7 @@ const { v4: uuidv4 } = require("uuid");
 class Item {
   // Insert a new item
   static async create(itemData) {
-    const { name, description, hsnCode,status } = itemData;
+    let { name, description, hsnCode,status } = itemData;
 
     description = description ? description : null; 
 
