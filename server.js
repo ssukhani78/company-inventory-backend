@@ -6,6 +6,7 @@ const { testConnection } = require("./config/database");
 const companyRoutes = require("./routes/companyRoutes");
 const itemRoutes = require("./routes/itemRoutes");
 const userRoutes = require("./routes/userRoutes");
+const salesRoutes = require("./routes/salesRoutes");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -30,6 +31,7 @@ app.use((req, res, next) => {
 app.use("/company", companyRoutes);
 app.use("/item", itemRoutes);
 app.use("/auth", userRoutes);
+app.use("/sales", salesRoutes);
 
 // Health check endpoint
 app.get("/health", (req, res) => {
@@ -68,6 +70,13 @@ app.get("/", (req, res) => {
         update: "PUT /item/:id",
         delete: "DELETE /item/:id",
         getByHsnCode: "GET /item/hsn/:hsnCode",
+      },
+      sales: {
+        getAll: "GET /sales",
+        getById: "GET /sales/:id",
+        create: "POST /sales",
+        update: "PUT /sales/:id",
+        delete: "DELETE /sales/:id",
       },
     },
   });

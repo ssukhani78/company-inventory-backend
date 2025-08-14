@@ -196,7 +196,7 @@ const itemSchemas = {
       "string.max": "Item name must not exceed 100 characters",
     }),
 
-    description: Joi.string().max(500).allow(null,'').optional().messages({
+    description: Joi.string().max(500).allow(null, "").optional().messages({
       "string.max": "Description must not exceed 500 characters",
     }),
 
@@ -290,6 +290,92 @@ const userSchemas = {
   }),
 };
 
+// Sales validation schemas
+const salesSchemas = {
+  // Schema for creating a new sale
+  create: Joi.object({
+    companyId: Joi.string().uuid().required().messages({
+      "string.guid": "Company ID must be a valid UUID format",
+      "any.required": "Company ID is required",
+      "string.empty": "Company ID cannot be empty",
+    }),
+
+    itemId: Joi.string().uuid().required().messages({
+      "string.guid": "Item ID must be a valid UUID format",
+      "any.required": "Item ID is required",
+      "string.empty": "Item ID cannot be empty",
+    }),
+
+    unit: Joi.string()
+      .valid(
+        "box",
+        "kgs",
+        "mtr",
+        "ltr",
+        "pcs",
+        "roll",
+        "pkt",
+        "nos",
+        "bundle",
+        "lot"
+      )
+      .required()
+      .messages({
+        "any.only":
+          "Unit must be one of: box, kgs, mtr, ltr, pcs, roll, pkt, nos, bundle, lot",
+        "any.required": "Unit is required",
+        "string.empty": "Unit cannot be empty",
+      }),
+  }),
+
+  // Schema for updating a sale (all fields optional except validation rules)
+  update: Joi.object({
+    companyId: Joi.string().uuid().required().messages({
+      "string.guid": "Company ID is required", 
+    }),
+
+    itemId: Joi.string().uuid().required().messages({
+      "string.guid": "Item ID is required",
+    }),
+
+    unit: Joi.string()
+      .valid(
+        "box",
+        "kgs",
+        "mtr",
+        "ltr",
+        "pcs",
+        "roll",
+        "pkt",
+        "nos",
+        "bundle",
+        "lot"
+      )
+      .required()
+      .messages({
+        "any.only":
+          "Unit must be one of: box, kgs, mtr, ltr, pcs, roll, pkt, nos, bundle, lot",
+        "any.required": "Unit is required",
+        "string.empty": "Unit cannot be empty",
+      }),
+  })
+    .min(1)
+    .messages({
+      "object.min": "At least one field must be provided for update",
+    }),
+
+  // Schema for validating ID parameter
+  params: {
+    id: Joi.object({
+      id: Joi.string().uuid().required().messages({
+        "string.guid": "Sale ID must be a valid UUID format",
+        "any.required": "Sale ID is required",
+        "string.empty": "Sale ID cannot be empty",
+      }),
+    }),
+  },
+};
+
 // Export validation middleware functions
 module.exports = {
   validate,
@@ -310,10 +396,16 @@ module.exports = {
   validateUserUpdateProfile: validate(userSchemas.updateProfile, "body"),
   validateUserChangePassword: validate(userSchemas.changePassword, "body"),
 
+  // Sales validation middleware
+  validateCreateSale: validate(salesSchemas.create, "body"),
+  validateUpdateSale: validate(salesSchemas.update, "body"),
+  validateSaleId: validate(salesSchemas.params.id, "params"),
+
   // Raw schemas for reuse
   schemas: {
     company: companySchemas,
     item: itemSchemas,
     user: userSchemas,
+    sales: salesSchemas,
   },
 };

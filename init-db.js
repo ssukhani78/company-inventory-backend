@@ -34,7 +34,7 @@ function createTables() {
         CREATE TABLE IF NOT EXISTS company (
           id CHAR(36) PRIMARY KEY,
           name VARCHAR(100) NOT NULL,
-          gstNo VARCHAR(20) NOT NULL,
+          gstNo VARCHAR(20) NOT NULL UNIQUE,
           email VARCHAR(100) DEFAULT NULL,
           phone VARCHAR(20) DEFAULT NULL,
           address TEXT NOT NULL,
@@ -52,7 +52,7 @@ function createTables() {
       query: `
         CREATE TABLE IF NOT EXISTS item (
           id CHAR(36) PRIMARY KEY,
-          itemName VARCHAR(100) NOT NULL,
+          name VARCHAR(100) NOT NULL,
           hsnCode VARCHAR(20) NOT NULL,
           description TEXT DEFAULT NULL,
           status ENUM('active', 'inactive') NOT NULL,
@@ -79,7 +79,9 @@ function createTables() {
           id CHAR(36) PRIMARY KEY,
           companyId CHAR(36) NOT NULL,
           itemId CHAR(36) NOT NULL,
-          date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          unit enum('box','kgs','mtr','ltr','pcs','roll','pkt','nos','bundle','lot') NOT NULL,
+          createdAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          updatedAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
           FOREIGN KEY (companyId) REFERENCES company(id),
           FOREIGN KEY (itemId) REFERENCES item(id)
         )
