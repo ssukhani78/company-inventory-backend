@@ -3,10 +3,10 @@ require('dotenv').config();
 
 const dbConfig = {
   host: process.env.DB_HOST,         // or 'localhost'
-  port: process.env.DB_PORT,                // default
+  // port: process.env.DB_PORT,                // default
   user: process.env.DB_USER,              // your MySQL user
   password: process.env.DB_PASSWORD, // set your password
-  database: 'viewList',      // or whatever DB name you created
+  database: process.env.DB_NAME,      // or whatever DB name you created
 };
 
 // Create connection pool
