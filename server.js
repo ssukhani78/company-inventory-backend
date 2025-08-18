@@ -104,22 +104,31 @@ app.use((error, req, res, next) => {
 });
 
 // Initialize database and start server
-const startServer = async () => {
-  try {
-    // Test database connection
-    await testConnection();
+// const startServer = async () => {
+//   try {
+//     // Test database connection
+//     await testConnection();
 
-    // Start server
-    app.listen(PORT, () => {
-      console.log(`🚀 Server running on port ${PORT}`);
-      console.log(`📊 Environment: ${process.env.NODE_ENV}`);
-      console.log(`🔗 API Base URL: http://localhost:${PORT}`);
-      console.log(`📋 API Documentation: http://localhost:${PORT}`);
-    });
-  } catch (error) {
-    console.error("❌ Failed to start server:", error.message);
-    process.exit(1);
-  }
-};
+//     // Start server
+//     app.listen(PORT, () => {
+//       console.log(`🚀 Server running on port ${PORT}`);
+//       console.log(`📊 Environment: ${process.env.NODE_ENV}`);
+//       console.log(`🔗 API Base URL: http://localhost:${PORT}`);
+//       console.log(`📋 API Documentation: http://localhost:${PORT}`);
+//     });
+//   } catch (error) {
+//     console.error("❌ Failed to start server:", error.message);
+//     process.exit(1);
+//   }
+// };
 
-startServer();
+// startServer();
+
+
+// Test database connection when the module loads (optional, recommended for Vercel)
+testConnection().catch((err) => {
+  console.error("DB connection failed:", err.message);
+});
+
+// Export the Express app for Vercel
+module.exports = app;
