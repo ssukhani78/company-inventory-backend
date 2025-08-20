@@ -14,7 +14,7 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: "viewlist.vercel.app",
     credentials: true,
   })
 );
@@ -123,7 +123,6 @@ app.use((error, req, res, next) => {
 // };
 
 // startServer();
-
 
 // Test database connection when the module loads (optional, recommended for Vercel)
 testConnection().catch((err) => {
