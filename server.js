@@ -14,7 +14,7 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(
   cors({
-    origin: "https://viewlist.vercel.app",
+    origin: "https://view-list-app.vercel.app",
     credentials: true,
   })
 );
