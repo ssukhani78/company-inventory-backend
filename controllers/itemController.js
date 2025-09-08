@@ -12,14 +12,14 @@ class ItemController {
     try {
       const itemData = req.body;
 
-      const existingItem = await Item.getByHsnCode(itemData.hsnCode);
+      // const existingItem = await Item.getByHsnCode(itemData.hsnCode);
 
-      if (existingItem.length > 0) {
-        return res.status(400).json({
-          success: false,
-          message: "An item with this HSN code already exists",
-        });
-      }
+      // if (existingItem.length > 0) {
+      //   return res.status(400).json({
+      //     success: false,
+      //     message: "An item with this HSN code already exists",
+      //   });
+      // }
 
       const newItem = await Item.create(itemData);
 
